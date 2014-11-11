@@ -15,6 +15,9 @@ func Collector(c redis.Conn, key string) {
 	if err != nil {
 		fmt.Println("errorrr", err)
 	}
+	//	if jumlahque == 0 {
+	//		return
+	//	}
 	delay, err := time.ParseDuration("3s")
 	work := WorkRequest{Jumlah: jumlahque, Delay: delay}
 	WorkQueue <- work

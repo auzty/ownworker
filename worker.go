@@ -13,7 +13,7 @@ func NewWorker(id int, workerQueue chan chan WorkRequest, c redis.Conn) Worker {
 		Work:        make(chan WorkRequest),
 		WorkerQueue: workerQueue,
 		QuitChan:    make(chan bool),
-		conn:        c}
+		conn:        make(chan redis.Conn)}
 
 	return worker
 }
@@ -23,7 +23,7 @@ type Worker struct {
 	Work        chan WorkRequest
 	WorkerQueue chan chan WorkRequest
 	QuitChan    chan bool
-	conn        redis.Conn
+	conn        chan redis.Conn
 }
 
 func (w Worker) Start() {
@@ -36,9 +36,9 @@ func (w Worker) Start() {
 			case work := <-w.Work:
 				fmt.Printf("worker%d: Received Work request, delaying for %f seconds\n", w.ID, work.Delay)
 
-				time.Sleep(work.Delay)
+				time.Sleep(10)
 
-				fmt.Printf("worker%d: Helooo, %s!\n", w.ID, work.Jumlah)
+				fmt.Printf("worker%d: Helooo, %d!\n", w.ID, work.Jumlah)
 
 			case <-w.QuitChan:
 				fmt.Printf("worker%d stoppping\n", w.ID)

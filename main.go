@@ -20,4 +20,5 @@ func main() {
 	fmt.Println("Registering the collector")
 	Collector(conn, "resque:gitlab:schedule")
 
+	defer conn.Close()
 }
