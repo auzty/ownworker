@@ -3,25 +3,21 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net/http"
+	"github.com/garyburd/redigo/redis"
 )
 
 var (
-	NWorkers = flag.Int("n", 4, "The Number of worker to start")
-	HTTPAddr = flag.String("http", "127.0.0.1:8000", "addrest to listen for http request")
+	NWorkers  = flag.Int("n", 4, "The Number of worker to start")
+	conn, err = redis.Dial("tcp", "localhost:6379")
 )
 
 func main() {
 	flag.Parse()
 
 	fmt.Println("Starting the dispatcher")
-	StartDispatcher(*NWorkers)
+	StartDispatcher(*NWorkers, conn)
 
 	fmt.Println("Registering the collector")
-	http.HandleFunc("/work", Collector)
+	Collector(conn, "resque:gitlab:schedule")
 
-	fmt.Println("HTTP server Listening on", *HTTPAddr)
-	if err := http.ListenAndServe(*HTTPAddr, nil); err != nil {
-		fmt.Println(err.Error())
-	}
 }
